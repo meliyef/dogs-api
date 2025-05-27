@@ -33,4 +33,36 @@ describe('Endpoints', () => {
             expect(response.body[0]).toEqual(expect.objectContaining(dogs[0]));
         });
     });
-});
+    describe('POST /dogs', () => {
+        it('should POST a dog to DB', async () => {
+            const response = await request(app)
+            .post('/dogs')
+            .send(testDogData)
+            .set('Content-Type', 'application/json') 
+            .expect(200);
+    
+        expect(response.body).toBeDefined();
+        expect(response.body).toEqual(expect.objectContaining(testDogData));
+        });
+        it('should delete a dog', async () => {
+            // First, create a dog to get a valid ID
+            const postResponse = await request(app)
+                .post('/dogs')
+                .send(testDogData)
+                .set('Content-Type', 'application/json')
+                .expect(200);
+        
+            const dogId = postResponse.body.id;
+        
+            // Now, delete the dog using the retrieved ID
+            const deleteResponse = await request(app)
+                .delete(`/dogs/${dogId}`)
+                .set('Content-Type', 'application/json')
+                .expect(200);
+        
+            // Assert that the response confirms the deletion
+            expect(deleteResponse.body).toBeDefined();
+        });
+
+       })
+})
